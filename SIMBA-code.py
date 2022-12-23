@@ -1,3 +1,5 @@
+import Bio
+
 from Bio import SeqIO
 
 ref_seq = SeqIO.read('GISAID Ref Seq.fasta', 'fasta')    # reading the GISAID Reference Sequence into memory
@@ -7,7 +9,8 @@ def spike_gene_cutter_cleaner(input_file, file_format):
     # from Bio import SeqIO    # We use Biopython's SeqIO parser to load our sequences
     import sys
 
-    # The  next section loads the SARS-CoV-2 sequences from file.
+    # The  next section loads the SARS-CoV-2 sequences from file. Make sure the file to be loaded is in the same folder
+    # as the package, else provide full filepath to the file.
 
     input_file = input("Enter full 'input' filename and filetype eg input_file.fasta")
     file_format = input("Enter 'file format' eg fasta")
@@ -60,9 +63,14 @@ else:
 
 ####################################################################################################
 ####################################################################################################
+from Bio import AlignIO
 
+aligned_sequences_filename = input('Enter filename including format eg aligned_spike.fasta: ')     #make sure the alignment file is in in the same
+                                                                                                #directory as SIMBA else use full filepath
+aligned_sequences_format = input('Enter file format eg fasta: ')
 
-aligned_sequences = []
+aligned_sequences = AlignIO.read(aligned_sequences_filename, aligned_sequences_format)
+
 def triplet_code_table(triplet_code):
 
     '''Triplet codes that code for specific amino acids based on the DNA triplet code table'''
@@ -136,16 +144,21 @@ def triplet_code_table(triplet_code):
             print('Please check if all bases are A, C, T or G')
 
 ############################################################################################################################################
+ref_seq = SeqIO.parse('RefSeq S gene.fasta', 'fasta')
+
+#aligned sequences already passed in the pprevious section
+
+#### there is need for code that divides nucleotide sequences into windows before comparison.
 base = ref_seq
 
-def sum_of_codon_synonymous_substitutions(triplet_code, lower=0, upper=3):
-    for i in range(lower=0, upper=3):      #Lower represents the lower bound in our sum and upper is the upper bound. For python index, the first value would be 0
+def sum_of_codon_synonymous_substitutions(triplet_code, lower=0, upper=2):
+    for i in range(lower=0, upper=2):      #Lower represents the lower bound in our sum and upper is the upper bound. For python index, the first value would be 0
         
-        if i = 0:                      
+        if i = 0:                             #where i = base in a codon
             if base != ref_seq:            
-                fraction_of_change1 = 0.05            #Fraction of change denotes the chances of a codon for coding another amino acid when there is a mutation eg 
-            else:
-                fraction_of_change1= 0                                    #changing the first codon nucleotide results in 5% chance of change in amino acid coded.                     
+                fraction_of_change1 = 0.05            #Fraction of change denotes the chances of a codon for coding another amino acid when there is  
+            else:                                     #a mutation eg changing the first codon nucleotide results in 5% chance of change in amino acid coded.
+                fraction_of_change1= 0                                  
         
         elif i = 1:
             if base != ref_seq:
@@ -168,5 +181,12 @@ def sum_of_non_synonymous_substitutions(sum_of_synonymous_fractions):
     sum_of_non_synonymous_fractions = 3 - sum_of_synonymous_fractions   # to find sum of non-synonymous fraction we subtract the sum of 
     return sum_of_non_synonymous_fractions                               #synonymous fraction from 3
 
+number_of_codons = (len(ref_seq))/3      # this is number of codons in the spike sequences.
+number_of_sequences = count(aligned_sequences.Seq)
+
+def total_number_of_synonymous_sites(sum_of_synonymous_fractions, lower=0, upper=number_of_codons-1):    #python indexing
+
+    for j in range(lower=0, upper=number_of_codons - 1):
+        sum_of_synonymous_sites = sum(sum_of_synonymous_fractions)/number_of_sequences
 
 
